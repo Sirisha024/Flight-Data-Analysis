@@ -18,7 +18,7 @@ use FlightDataAnalysis;
 
 -- Step 2 : CSV dataset location mounted on S3 bucket
 %fs
-ls /mnt/jrambucket/spring2023/project/flight-history-analysis
+ls /mnt/siribucket/spring2023/project/flight-history-analysis
 
 -- COMMAND ----------
 
@@ -26,21 +26,21 @@ ls /mnt/jrambucket/spring2023/project/flight-history-analysis
  -- Creating a bronze table for Flight- History CSV file (External Table. Data mounted in S3)
   CREATE TABLE Bronze_Flight_Data_Analysis 
   USING csv 
-  OPTIONS(path='/mnt/jrambucket/spring2023/project/flight-history-analysis/Flight-History-2008.csv',header='true',inferSchema='true');
+  OPTIONS(path='/mnt/siribucket/spring2023/project/flight-history-analysis/Flight-History-2008.csv',header='true',inferSchema='true');
 
 -- COMMAND ----------
 
 -- Creating a bronze table for Airport Details CSV file (External Table. Data mounted in S3)
 CREATE TABLE Bronze_Airport_Details 
 USING csv 
-OPTIONS(path='/mnt/jrambucket/spring2023/project/flight-history-analysis/airports.csv',header='true',inferSchema='true');  
+OPTIONS(path='/mnt/siribucket/spring2023/project/flight-history-analysis/airports.csv',header='true',inferSchema='true');  
 
 -- COMMAND ----------
 
 -- Creating a bronze table for Airline Details CSV file (External Table. Data mounted in S3)
 CREATE TABLE Bronze_Airlines_Details 
 USING csv 
-OPTIONS(path='/mnt/jrambucket/spring2023/project/flight-history-analysis/airlines.csv',header='true',inferSchema='true');
+OPTIONS(path='/mnt/siribucket/spring2023/project/flight-history-analysis/airlines.csv',header='true',inferSchema='true');
 
 -- COMMAND ----------
 
@@ -81,7 +81,7 @@ SELECT * FROM Bronze_Airport_Details  LIMIT 3;
 -- creating delta table to fix column names, data types
 CREATE TABLE Bronze_Delta_Cleand_Table
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Delta_Cleand_Table'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Delta_Cleand_Table'
 AS SELECT * FROM Bronze_Flight_Data_Analysis;
 
 
@@ -179,7 +179,7 @@ Cancellation_Code char(1),
 Security_Delay int,
 Weather_Delay int,
 Late_Aircraft_Delay int
-) USING delta Location '/mnt/jrambucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Flight_Data_Delta';
+) USING delta Location '/mnt/siribucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Flight_Data_Delta';
 
 -- COMMAND ----------
 
@@ -232,7 +232,7 @@ DESC Bronze_Flight_Data_Delta;
 -- Creating the Final Bronze table for aiport details
 CREATE TABLE Bronze_Airports_Details 
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Delta_Airport_Table'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Delta_Airport_Table'
 AS SELECT * FROM Bronze_Airport_Details;
 
 -- COMMAND ----------
@@ -240,7 +240,7 @@ AS SELECT * FROM Bronze_Airport_Details;
 -- Creating the Final Bronze table for airline details
 CREATE TABLE Bronze_Airline_Details 
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Delta_Airline_Table'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Bronze/Bronze_Delta_Airline_Table'
 AS SELECT * FROM Bronze_Airlines_Details;
 
 -- COMMAND ----------
@@ -257,7 +257,7 @@ AS SELECT * FROM Bronze_Airlines_Details;
 -- Creating a Silver Table
 CREATE TABLE Silver_Flight_Data_Delta
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Silver/Silver_Flight_Data_Delta'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Silver/Silver_Flight_Data_Delta'
 AS SELECT * FROM Bronze_Flight_Data_Delta;
 
 -- COMMAND ----------
@@ -270,7 +270,7 @@ LIMIT 5;
 -- Creating a Silver Table for Airline Details
 CREATE TABLE Silver_Airline_Details
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Silver/Silver_Airline_Details'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Silver/Silver_Airline_Details'
 AS SELECT * FROM Bronze_Airline_Details ;
 
 -- COMMAND ----------
@@ -282,7 +282,7 @@ SELECT * FROM Silver_Airline_Details LIMIT 5;
 -- Creating a Silver Table for Airport Details
 CREATE TABLE Silver_Airports_Details
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Silver/Silver_Airports_Details'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Silver/Silver_Airports_Details'
 AS SELECT * FROM Bronze_Airports_Details;
 
 -- COMMAND ----------
@@ -429,7 +429,7 @@ AND Month = 2;
 -- Creating a Gold Table for Flight History CSV File
 CREATE TABLE Gold_Flight_Data
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Gold/Gold_Flight_Data'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Gold/Gold_Flight_Data'
 AS SELECT * FROM Silver_Flight_Data_Delta;
 
 -- COMMAND ----------
@@ -441,7 +441,7 @@ select * from Gold_Flight_Data;
 -- Creating a Gold Table for Flight History CSV File
 CREATE TABLE Gold_Airports_Details
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Gold/Gold_Airports_Details'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Gold/Gold_Airports_Details'
 AS SELECT * FROM Silver_Airports_Details;
 
 -- COMMAND ----------
@@ -453,7 +453,7 @@ select * from Gold_Airports_Details;
 -- Creating a Gold Table for Flight History CSV File
 CREATE TABLE Gold_Airline_Details
 USING DELTA
-LOCATION '/mnt/jrambucket/spring2023/project/flight-history-analysis/Gold/Gold_Airline_Details'
+LOCATION '/mnt/siribucket/spring2023/project/flight-history-analysis/Gold/Gold_Airline_Details'
 AS SELECT * FROM Silver_Airline_Details;
 
 -- COMMAND ----------
